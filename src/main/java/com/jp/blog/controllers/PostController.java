@@ -58,28 +58,39 @@ public class PostController {
 //	}
 	@GetMapping("/posts")
 	public ResponseEntity<List<PostDto>> getAllPost(
-	        @RequestParam(value="pageNumber", defaultValue="0", required=false) Integer pageNumber,
-	        @RequestParam(value="pageSize", defaultValue="5", required=false) Integer pageSize
-	) {
-	    List<PostDto> posts = this.postService.getAllPost(pageNumber, pageSize);
-	    return new ResponseEntity<>(posts, HttpStatus.OK);
+			@RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+			@RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
+			@RequestParam(value = "sortBy", defaultValue = "postId", required = false) String sortBy,
+			@RequestParam(value = "sortDir", defaultValue = "ASC", required = false) String sortDir) {
+		List<PostDto> posts = this.postService.getAllPost(pageNumber, pageSize, sortBy, sortDir);
+		return new ResponseEntity<>(posts, HttpStatus.OK);
 	}
 
-	
 	@GetMapping("/{postId}")
-	public ResponseEntity<PostDto> getById(@PathVariable Integer postId){
-		PostDto postDto= this.postService.getPostById(postId);
+	public ResponseEntity<PostDto> getById(@PathVariable Integer postId) {
+		PostDto postDto = this.postService.getPostById(postId);
 		return new ResponseEntity<PostDto>(postDto, HttpStatus.OK);
 	}
+
 	@DeleteMapping("/{postId}")
-	public ResponseEntity<?> deletePost(@PathVariable Integer postId){
+	public ResponseEntity<?> deletePost(@PathVariable Integer postId) {
 		this.postService.deletePost(postId);
-		return ResponseEntity.ok(Map.of("Message","UserDeleted"));
+		return ResponseEntity.ok(Map.of("Message", "UserDeleted"));
 	}
-	
+
 	@PutMapping("/{postId}")
 	public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable Integer postId){
 		PostDto updatedPost= this.postService.updatePost(postDto, postId);
 		return new ResponseEntity<PostDto>(updatedPost, HttpStatus.OK);
 	}
+
+	@GetMapping("/search/{keyword}")
+	public ResponseEntity<List<PostDto>> searchPostByTitle(
+			@PathVariable("keyword") String keyword)
+			{
+				List<PostDto> result=this.postService.postSearch(keyword);
+				return new ResponseEntity<List<PostDto>>(result, HttpStatus.OK);
+		
+	
+			}
 }
